@@ -62,10 +62,11 @@ connection.connect(function(err) {
                         console.log("that is a great selection!")
                         var newStockQuantity = res[0].stock_quantity - selectedQuantity;
                         var totalPrice = res[0].price * selectedQuantity;
-                        var newProductSales = res[0].
+                        var newProductSales = res[0].price * selectedQuantity;
                     connection.query("UPDATE products SET ? WHERE ?",
                     [{
-                        stock_quantity: newStockQuantity
+                        stock_quantity: newStockQuantity,
+                        product_sales: newProductSales
                     },
                     {
                        id: selectedProduct

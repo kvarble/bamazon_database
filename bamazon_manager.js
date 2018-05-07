@@ -62,7 +62,7 @@ function queryAllProducts(){
 }
 
 function queryLowInventory() {
-    connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res){
+    connection.query("SELECT * FROM products WHERE stock_quantity <= 5", function(err, res){
         console.log("Product ID  |  Name  |  Department  |  Price  |  Quantity")
       if (err) throw err;
        for (var i = 0; i < res.length; i++){
@@ -70,6 +70,7 @@ function queryLowInventory() {
        }
        runSearch();
     })
+    
 }
 function addToInventory(){
     inquirer

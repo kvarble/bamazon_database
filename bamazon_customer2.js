@@ -18,73 +18,71 @@ connection.connect(function(err) {
 
   function queryAllProducts() {
       connection.query("SELECT * FROM products", function(err, res){
+          console.log("Product ID  |  Name  |  Department  |  Price  |  Quantity")
         if (err) throw err;
-        console.log("RESULTS" + res)
-        inquirer
-      .prompt([
-        {
-          name: "choice",
-          type: "rawlist",
-          choices: function() {
-            var choiceArray = [];
          for (var i = 0; i < res.length; i++){
-             choiceArray.push(res[i].product_name + res[i].stock_quantity);
-            }
-            return choiceArray;
-          },
-      
-      
-      message: "What product would you like?"
-    },
-    {
-      name: "sell",
-      type: "input",
-      message: "How many would you like?",
-    //   validate: function(value) {
-    //     if (isNaN(value) === false) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
-    }
-  ])
-
-//   function shopForProduct() {
-//      inquirer.prompt([
-//          {
-//          name: "bamazonProducts",
-//          type: "input",
-//          message: "please use the most left number to choose the product you would like to buy"
-//          },
-//          {
-//          name: "bamazonQuantities",
-//          type: "input",
-//          message: "how many would you like?", 
-         
-    //      }
-    //  ])
-     .then(function(answer){
-         console.log("ANSWER" + answer)
-         var selectedProduct;
-         for (var i=0; i<res.length; i++){
-             if (res[i].id === answer.choice) {
-                 selectedProduct = res[i];
-             }
+             console.log(res[i].id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity)
+             
          }
-        if (choice.stock_quantity > parseInt(answer.sell)) {
+         shopForProduct()
+
+  
+
+  function shopForProduct() {
+     inquirer.prompt([
+         {
+         name: "product",
+         type: "input",
+         message: "please use the most left number to choose the product you would like to buy"
+         },
+         {
+         name: "quantities",
+         type: "input",
+         message: "how many would you like?", 
+         validate: function(value) {
+             if (isNaN(value) === false) {
+                 return true;
+             }
+             return false;
+         }
+         }
+     ])
+     .then(function(answer){
+         var selectedProduct = answer.product;
+         var selectedQuantity = answer.quantities;
+
             connection.query(
-                "UPDATE products SET ? WHERE ?",
-                [
+                "SELECT * FROM products WHERE ?",
                     {
-                        stock_quantity: stock_quantity-answer.sell
+                        id: answer.product
+                    }, function(err, res) {
+                        if (selectedQuantity > res[0].stock_quantity) {
+                            console.log("Apologies! we don't have that many")
+                        } else {
+                        console.log("that is a great selection!")
+                        var newStockQuantity = res[0].stock_quantity - selectedQuantity;
+                        var totalPrice = res[0].price * selectedQuantity;
+                        var newProductSales = res[0].
+                    connection.query("UPDATE products SET ? WHERE ?",
+                    [{
+                        stock_quantity: newStockQuantity
                     },
                     {
-                        id: selectedProduct.id
-                    } 
-                ]
-            )
-        }
-     });
-  });
-      }
-  
+                       id: selectedProduct
+                    }],
+                    function(err, res)
+                    {
+                        console.log("That will cost $" + totalPrice)
+                        shopForProduct()
+                    })
+                    
+                    }
+                    })
+        })
+    }
+    
+    
+      
+      
+}) 
+}

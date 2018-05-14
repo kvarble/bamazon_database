@@ -41,7 +41,7 @@ connection.connect(function(err) {
       });
   }
   function queryProductSales(){
-    connection.query("SELECT departments.*, products.* FROM departments, products WHERE departments.department_name = products.department_name", function(err, res){
+    connection.query("SELECT * FROM departments, SUM(product_sales) as 'total sales' FROM products GROUP BY department_name", function(err, res){
         // console.log("Department ID  |  Department_Name  |  over_head_costs  |  Price  |  Quantity")
       if (err) throw err;
        for (var i = 0; i < res.length; i++){
